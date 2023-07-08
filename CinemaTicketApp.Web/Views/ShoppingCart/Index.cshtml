@@ -1,0 +1,64 @@
+﻿@using Microsoft.Extensions.Options
+@inject IOptions<CinemaTicketApp.Domain.StripeSettings> Stripe
+@model CinemaTicketApp.Domain.DTO.ShoppingCartDTO
+
+<div class="container">
+    <div class="row m-5 ">
+
+        <form asp-controller="ShoppingCart" asp-action="PayOrder" method="post">
+            <article>
+                <script src="https://checkout.stripe.com/checkout.js"
+                        class="stripe-button"
+                        data-key="@Stripe.Value.PublishableKey"
+                        data-locale="auto"
+                        data-description="OnlineCinema Application Payment"
+                        data-amount="@(Model.TotalPrice * 100)"
+                        data-label="Pay $@Model.TotalPrice">
+
+                </script>
+            </article>
+        </form>
+
+
+
+    </div>
+    <div class="m-5">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">TicketName</th>
+                    <th scope="col">TicketPrice</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Total</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ProductsInShoppingCart.Count; i++)
+                {
+                    var item = Model.ProductsInShoppingCart[i];
+
+                    <tr>
+                        <th scope="row">@(i + 1)</th>
+                        <td>@item.Product.ProductName</td>
+                        <td>@item.Product.ProductPrice</td>
+                        <td>@item.Quantity</td>
+                        <td>@(item.Product.ProductPrice * item.Quantity)</td>
+                        <td> <a asp-route-id="@item.Product.Id" asp-controller="ShoppingCart" asp-action="DeleteFromShoppingCart" class="btn btn-danger">Delete</a></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="col">TotalPrice:</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col">@Model.TotalPrice </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
